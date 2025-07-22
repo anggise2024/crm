@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}CRM Follow-up - CRM Follow-up System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-phone me-2"></i>CRM Follow-up
+            </h1>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="crm" class="form-label">CRM</label>
+                            <select class="form-select" id="crm" name="crm">
+                                <option value="">All CRM</option>
+                                <option value="HILDA" {% if crm_filter == 'HILDA' %}selected{% endif %}>HILDA</option>
+                                <option value="RANIA" {% if crm_filter == 'RANIA' %}selected{% endif %}>RANIA</option>
+                                <option value="ESTI" {% if crm_filter == 'ESTI' %}selected{% endif %}>ESTI</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ date_filter }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="today_followup" class="form-label">FU</label>
+                            <select class="form-select" id="today_followup" name="today_followup">
+                                <option value="">Semua</option>
+                                <option value="true" {% if today_followup == 'true' %}selected{% endif %}>Hari Ini</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="pending_followup" class="form-label">Status</label>
+                            <select class="form-select" id="pending_followup" name="pending_followup">
+                                <option value="">Semua Status</option>
+                                <option value="true" {% if pending_followup == 'true' %}selected{% endif %}>Belum FU</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Search</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="search" name="search" 
+                                       placeholder="Customer name or Order ID..." value="{{ search_query }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <a href="{{ url_for('crm_followup') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Follow-up Records -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">FU Records ({{ records|length }})</h5>
+                    <small class="text-muted">Click buttons to mark FU as completed</small>
+                </div>
+                <div class="card-body p-0">
+                    {% if records %}
+                    {% for record in records %}
+                    <div class="border-bottom p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-info me-2">{{ record.crm }}</span>
+                                    <strong>{{ record.customer_name }}</strong>
+                                </div>
+                                <div class="text-muted small">
+                                    <div><strong>Order ID:</strong> {{ record.order_id }}</div>
+                                    {% if record.receiver_phone %}
+                                    <div><strong>Phone:</strong> {{ record.receiver_phone }}</div>
+                                    {% endif %}
+                                    <div><strong>Product:</strong> {{ record.produk }} (Qty: {{ record.qty }})</div>
+                                    <div><strong>Created:</strong> {{ record.created_date.strftime('%Y-%m-%d') if record.created_date else '-' }}</div>
+                                    {% if record.complete_date %}
+                                    <div><strong>Completed:</strong> {{ record.complete_date.strftime('%Y-%m-%d') }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <small class="text-muted">Shipping Status:</small><br>
+                                    {% if record.status_pengiriman == 'TERKIRIM' %}
+                                    <span class="badge bg-success">{{ record.status_pengiriman }}</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">{{ record.status_pengiriman }}</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <small class="text-muted">Overall Status:</small><br>
+                                    {% if record.overall_status == 'SELESAI' %}
+                                    <span class="badge bg-success">SELESAI</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">BELUM</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="row g-1">
+                                    <!-- FU DIKIRIM (Follow-up 1) -->
+                                    <div class="col-12 mb-1">
+                                        {% set fu1_overdue = (record.created_date and ((current_date - record.created_date.date()).days > 2) and record.follow_up_1_status == 'PENDING') %}
+                                        {% if record.follow_up_1_status == 'COMPLETED' %}
+                                        <button class="btn btn-success btn-sm w-100" disabled>
+                                            <i class="fas fa-check me-1"></i>FU DIKIRIM ✓
+                                            {% if record.follow_up_1_date %}
+                                            <br><small>{{ record.follow_up_1_date.strftime('%d/%m %H:%M') }} WIB</small>
+                                            {% endif %}
+                                        </button>
+                                        {% else %}
+                                        <button class="btn {% if fu1_overdue %}btn-danger{% else %}btn-outline-primary{% endif %} btn-sm w-100" 
+                                                onclick="updateFollowup({{ record.id }}, 'followup1')"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                data-bs-title="Klik untuk menandai FU telah dikirim ke customer">
+                                            <i class="fas fa-{% if fu1_overdue %}exclamation-triangle{% else %}phone{% endif %} me-1"></i>
+                                            {% if fu1_overdue %}
+                                            <span>FU DIKIRIM ⚠️</span>
+                                            {% else %}
+                                            FU DIKIRIM
+                                            {% endif %}
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- FU TERKIRIM (Follow-up 2) -->
+                                    <div class="col-12 mb-1">
+                                        {% if record.status_pengiriman == 'TERKIRIM' and record.follow_up_1_status == 'COMPLETED' %}
+                                            {% set fu2_overdue = (record.complete_date and ((current_date - record.complete_date.date()).days > 1) and record.follow_up_2_status == 'PENDING') %}
+                                            {% if record.follow_up_2_status == 'COMPLETED' %}
+                                            <button class="btn btn-success btn-sm w-100" disabled>
+                                                <i class="fas fa-check me-1"></i>FU TERKIRIM ✓
+                                                {% if record.follow_up_2_date %}
+                                                <br><small>{{ record.follow_up_2_date.strftime('%d/%m %H:%M') }} WIB</small>
+                                                {% endif %}
+                                            </button>
+                                            {% else %}
+                                            <button class="btn {% if fu2_overdue %}btn-danger{% else %}btn-outline-warning{% endif %} btn-sm w-100" 
+                                                    onclick="updateFollowup({{ record.id }}, 'followup2')">
+                                                <i class="fas fa-{% if fu2_overdue %}exclamation-triangle{% else %}phone-volume{% endif %} me-1"></i>
+                                                {% if fu2_overdue %}
+                                                <span>FU TERKIRIM ⚠️</span>
+                                                {% else %}
+                                                FU TERKIRIM
+                                                {% endif %}
+                                            </button>
+                                            {% endif %}
+                                        {% else %}
+                                        <button class="btn btn-secondary btn-sm w-100" disabled>
+                                            <i class="fas fa-lock me-1"></i>FU TERKIRIM
+                                            <br><small>{% if record.follow_up_1_status != 'COMPLETED' %}Perlu FU DIKIRIM{% else %}Perlu TERKIRIM{% endif %}</small>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- FU PENAWARAN (Follow-up 3) -->
+                                    <div class="col-12 mb-1">
+                                        {% if record.follow_up_3_scheduled_date %}
+                                            {% set fu3_ready = (record.follow_up_3_scheduled_date <= current_date) %}
+                                            {% set fu3_overdue = (record.follow_up_3_scheduled_date and ((current_date - record.follow_up_3_scheduled_date).days > 1) and record.follow_up_3_status == 'PENDING') %}
+                                            {% if record.follow_up_3_status == 'COMPLETED' %}
+                                            <button class="btn btn-success btn-sm w-100" disabled>
+                                                <i class="fas fa-check me-1"></i>FU PENAWARAN ✓
+                                                {% if record.follow_up_3_date %}
+                                                <br><small>{{ record.follow_up_3_date.strftime('%d/%m %H:%M') }} WIB</small>
+                                                {% endif %}
+                                            </button>
+                                            {% elif fu3_ready %}
+                                            <button class="btn {% if fu3_overdue %}btn-danger{% else %}btn-warning{% endif %} btn-sm w-100" 
+                                                    onclick="updateFollowup({{ record.id }}, 'followup3')"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                    data-bs-title="Tersedia setelah {{ (record.qty * 7 - 2) }} hari dari complete date. Klik untuk menandai penawaran telah dilakukan">
+                                                <i class="fas fa-{% if fu3_overdue %}exclamation-triangle{% else %}gift{% endif %} me-1"></i>
+                                                {% if fu3_overdue %}
+                                                <span>FU PENAWARAN ⚠️</span>
+                                                {% else %}
+                                                FU PENAWARAN
+                                                {% endif %}
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                                                <i class="fas fa-clock me-1"></i>FU PENAWARAN
+                                                <br><small>{{ record.follow_up_3_scheduled_date.strftime('%d/%m') }}</small>
+                                            </button>
+                                            {% endif %}
+                                        {% else %}
+                                        <button class="btn btn-secondary btn-sm w-100" disabled>
+                                            <i class="fas fa-clock me-1"></i>FU PENAWARAN
+                                            <br><small>Belum terjadwal</small>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-phone-slash fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No follow-up records found</h5>
+                        <p class="text-muted">Try adjusting your filters or check back later.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Error: {{ error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updateFollowup(recordId, type) {
+    if (!confirm(`Are you sure you want to mark this ${type} as completed?`)) {
+        return;
+    }
+    
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+    
+    fetch('/update-followup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            record_id: recordId,
+            type: type
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Follow-up updated successfully!', 'success');
+            
+            // Open WhatsApp if URL is provided
+            if (data.whatsapp_url) {
+                window.open(data.whatsapp_url, '_blank');
+            }
+            
+            // Reload the page to show updated status
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showAlert(data.message || 'Error updating follow-up', 'danger');
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error updating follow-up', 'danger');
+        button.disabled = false;
+        button.innerHTML = originalText;
+    });
+}
+
+// Initialize tooltips when document is ready
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

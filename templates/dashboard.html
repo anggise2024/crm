@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CRM Follow-up System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </h1>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="date" class="form-label">Filter by Date</label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ date_filter }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="crm" class="form-label">Filter by CRM</label>
+                            <select class="form-select" id="crm" name="crm">
+                                <option value="">All CRM</option>
+                                <option value="HILDA" {% if crm_filter == 'HILDA' %}selected{% endif %}>HILDA</option>
+                                <option value="RANIA" {% if crm_filter == 'RANIA' %}selected{% endif %}>RANIA</option>
+                                <option value="ESTI" {% if crm_filter == 'ESTI' %}selected{% endif %}>ESTI</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <h4>{{ stats.total_orders or 0 }}</h4>
+                    <p class="card-text">Total Orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h4>{{ stats.total_customers or 0 }}</h4>
+                    <p class="card-text">Total Customers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h4>{{ stats.total_complete or 0 }}</h4>
+                    <p class="card-text">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h4>{{ stats.total_pending or 0 }}</h4>
+                    <p class="card-text">Pending</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Follow-up Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-phone me-2"></i>FU DIKIRIM Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h3 class="text-success">{{ stats.followup1_completed or 0 }}</h3>
+                                <p class="text-muted">Completed</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ stats.followup1_pending or 0 }}</h3>
+                                <p class="text-muted">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        {% set total_followup1 = (stats.followup1_completed or 0) + (stats.followup1_pending or 0) %}
+                        {% set completion_rate1 = (stats.followup1_completed / total_followup1 * 100) if total_followup1 > 0 else 0 %}
+                        <div class="progress-bar bg-success" style="width: {{ completion_rate1 }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ "%.1f"|format(completion_rate1) }}% completion rate</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-phone-volume me-2"></i>FU TERKIRIM Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h3 class="text-success">{{ stats.followup2_completed or 0 }}</h3>
+                                <p class="text-muted">Completed</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ stats.followup2_pending or 0 }}</h3>
+                                <p class="text-muted">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        {% set total_followup2 = (stats.followup2_completed or 0) + (stats.followup2_pending or 0) %}
+                        {% set completion_rate2 = (stats.followup2_completed / total_followup2 * 100) if total_followup2 > 0 else 0 %}
+                        <div class="progress-bar bg-success" style="width: {{ completion_rate2 }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ "%.1f"|format(completion_rate2) }}% completion rate</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FU PENAWARAN Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-handshake me-2"></i>FU PENAWARAN Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="text-center">
+                                <h3 class="text-success">{{ stats.followup3_completed or 0 }}</h3>
+                                <p class="text-muted">Completed</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ stats.followup3_pending or 0 }}</h3>
+                                <p class="text-muted">Pending</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-center">
+                                <h3 class="text-info">{{ stats.followup3_scheduled or 0 }}</h3>
+                                <p class="text-muted">Scheduled</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        {% set total_followup3 = (stats.followup3_completed or 0) + (stats.followup3_pending or 0) %}
+                        {% set completion_rate3 = (stats.followup3_completed / total_followup3 * 100) if total_followup3 > 0 else 0 %}
+                        <div class="progress-bar bg-success" style="width: {{ completion_rate3 }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ "%.1f"|format(completion_rate3) }}% completion rate</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>System Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">Google Sheets:</small><br>
+                            {% if sheets_status == 'Connected' %}
+                            <span class="badge bg-success">Connected</span>
+                            {% else %}
+                            <span class="badge bg-danger">{{ sheets_status }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Database:</small><br>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+                    {% if sheets_status != 'Connected' %}
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <small><i class="fas fa-exclamation-triangle me-2"></i>
+                        Google Sheets authentication diperlukan untuk sinkronisasi data otomatis.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Activity
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_logs %}
+                    {% for log in recent_logs[:3] %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="fw-bold">{{ log.action }}</small>
+                            <br><small class="text-muted">{{ log.details[:50] }}{% if log.details|length > 50 %}...{% endif %}</small>
+                        </div>
+                        <small class="text-muted">{{ log.timestamp.strftime('%H:%M') }}</small>
+                    </div>
+                    {% if not loop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                    {% else %}
+                    <small class="text-muted">No recent activity</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('crm_followup', today_followup='true') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-calendar-day me-2"></i>Today's Follow-ups
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('data_view', status='PENDING') }}" class="btn btn-warning w-100">
+                                <i class="fas fa-clock me-2"></i>Pending Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('data_view', status='TERKIRIM') }}" class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>Completed Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button class="btn btn-info w-100" onclick="manualUpdate()">
+                                <i class="fas fa-sync me-2"></i>Refresh Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Error: {{ error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Auto-refresh dashboard every 5 minutes
+    setInterval(function() {
+        window.location.reload();
+    }, 300000);
+</script>
+{% endblock %}
