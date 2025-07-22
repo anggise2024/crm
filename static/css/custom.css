@@ -1,0 +1,265 @@
+/* Custom CSS for Nabawi Herbal CRM System */
+
+/* Override Bootstrap dark theme with green theme */
+:root {
+    --bs-primary: #2d5016;
+    --bs-secondary: #6c757d;
+    --bs-success: #198754;
+    --bs-info: #0dcaf0;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    --bs-light: #f8f9fa;
+    --bs-dark: #212529;
+    --bs-body-bg: #1a3d0a;
+    --bs-body-color: white;
+}
+
+/* Custom Green Color Palette */
+:root {
+    --dark-green: #1a3d0a;
+    --medium-green: #2d5016;
+    --soft-green: #e8f5e8;
+    --light-green: #f0f8f0;
+    --accent-green: #4caf50;
+}
+
+/* Body styling */
+body {
+    background-color: var(--dark-green) !important;
+    color: white !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header/Navbar styling */
+.navbar {
+    background-color: var(--dark-green) !important;
+    border-bottom: 3px solid var(--accent-green);
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+    color: white !important;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--light-green) !important;
+}
+
+/* Card styling */
+.card {
+    background-color: var(--medium-green) !important;
+    border: 1px solid var(--accent-green);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.card-header {
+    background-color: var(--medium-green) !important;
+    color: white !important;
+    border-bottom: 1px solid var(--accent-green);
+    font-weight: 600;
+}
+
+.card-body {
+    background-color: var(--medium-green) !important;
+    color: white !important;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: var(--medium-green) !important;
+    border-color: var(--medium-green) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-green) !important;
+    border-color: var(--dark-green) !important;
+}
+
+.btn-outline-primary {
+    color: var(--medium-green) !important;
+    border-color: var(--medium-green) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--medium-green) !important;
+    border-color: var(--medium-green) !important;
+    color: white !important;
+}
+
+.btn-success {
+    background-color: var(--accent-green) !important;
+    border-color: var(--accent-green) !important;
+}
+
+.btn-warning {
+    background-color: #ff9800 !important;
+    border-color: #ff9800 !important;
+    color: white !important;
+}
+
+.btn-outline-warning {
+    color: #ff9800 !important;
+    border-color: #ff9800 !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ff9800 !important;
+    border-color: #ff9800 !important;
+    color: white !important;
+}
+
+/* Form controls */
+.form-control {
+    border-color: var(--accent-green) !important;
+    color: var(--dark-green) !important;
+    background-color: white !important;
+}
+
+.form-control:focus {
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25) !important;
+}
+
+.form-select {
+    border-color: var(--accent-green) !important;
+    color: var(--dark-green) !important;
+    background-color: white !important;
+}
+
+.form-select:focus {
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25) !important;
+}
+
+/* Badge styling */
+.badge.bg-info {
+    background-color: var(--medium-green) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--accent-green) !important;
+}
+
+.badge.bg-warning {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
+
+/* Text colors */
+.text-muted {
+    color: #c8e6c9 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
+}
+
+/* Alert styling */
+.alert-success {
+    background-color: var(--accent-green) !important;
+    border-color: var(--accent-green) !important;
+    color: white !important;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    border-color: #dc3545 !important;
+    color: #721c24 !important;
+}
+
+/* Logo styling */
+.navbar-brand img {
+    height: 40px;
+    width: auto;
+    margin-left: 10px;
+}
+
+/* Record cards styling */
+.border-bottom {
+    border-bottom-color: #d4edda !important;
+}
+
+/* Follow-up button improvements */
+.btn-sm {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Custom spacing for better readability */
+.container-fluid {
+    padding: 20px;
+}
+
+/* Make text more readable */
+strong {
+    color: white !important;
+}
+
+small {
+    color: #c8e6c9 !important;
+}
+
+/* Focus and hover effects */
+.card:hover {
+    box-shadow: 0 4px 12px rgba(45, 80, 22, 0.15);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-green);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--medium-green);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-green);
+}
+
+/* Statistics cards */
+.stats-card {
+    background: linear-gradient(135deg, var(--medium-green), var(--accent-green));
+    color: white;
+    border: none;
+}
+
+/* Tooltip styling */
+.tooltip-inner {
+    background-color: var(--accent-green) !important;
+    color: white !important;
+    font-size: 12px;
+    max-width: 300px;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: var(--accent-green) !important;
+}
+
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: var(--accent-green) !important;
+}
+
+.tooltip.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: var(--accent-green) !important;
+}
+
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+    border-right-color: var(--accent-green) !important;
+}
+
+/* Responsive logo */
+@media (max-width: 768px) {
+    .navbar-brand img {
+        height: 30px;
+    }
+}
